@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deriv Trading Bot</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .control-panel { margin-bottom: 20px; }
+        .stats { display: flex; flex-wrap: wrap; gap: 20px; }
+        .stat-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            min-width: 200px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .running { color: green; }
+        .stopped { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Deriv Trading Bot Control Panel</h1>
+    
+    <div class="control-panel">
+        <h2>Bot Status: <span id="status" class="stopped">Stopped</span></h2>
+        <button onclick="startBot()" id="startBtn">Start Bot</button>
+        <button onclick="stopBot()" id="stopBtn">Stop Bot</button>
+    </div>
+
+    <div class="stats" id="statsContainer">
+    </div>
+
+    <script>
+        function updateStats() {
+            fetch('/stats')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('statsContainer');
+                    container.innerHTML = '';
+                    for (const [symbol, stats] of Object.entries(data)) {
+                        container.innerHTML += `
+                            <div class="stat-card">
+                                <h3>${symbol}</h3>
+                                <p>Trades: ${stats.trades_placed}</p>
+                                <p>Success Rate: ${stats.success_rate.toFixed(2)}%</p>
+                                <p>Total P/L: $${stats.total_profit_loss.toFixed(2)}</p>
+                                <p>Avg Profit/Trade: $${stats.avg_profit_per_trade.toFixed(2)}</p>
+                            </div>
+                        `;
+                    }
+                });
+        }
+
+        function startBot() {
+            fetch('/start', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('status').textContent = 'Running';
+                        document.getElementById('status').className = 'running';
+                    }
+                });
+        }
+
+        function stopBot() {
+            fetch('/stop', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('status').textContent = 'Stopped';
+                        document.getElementById('status').className = 'stopped';
+                    }
+                });
+        }
+
+        // Update stats every 10 seconds
+        setInterval(updateStats, 10000);
+        updateStats();
+    </script>
+</body>
+</html>

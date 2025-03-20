@@ -1,10 +1,8 @@
-"""Main entry point for the trading bot"""
+"""Main entry point for the trading bot web interface"""
 import os
-import sys
 import logging
 from dotenv import load_dotenv
-from src.trading_bot import DerivTradingBot
-from src.exceptions import DerivBotError, ConfigError
+from src.web_interface import app
 
 # Configure logging
 logging.basicConfig(
@@ -15,39 +13,15 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
-logger = logging.getLogger(__name__)
 
 def setup_environment():
-    """Set up environment variables and validate requirements"""
-    # Load environment variables
+    """Set up environment variables"""
     load_dotenv()
-
-    # Check for required environment variables
     if not os.getenv("DERIV_API_KEY"):
-        logger.error("DERIV_API_KEY not found in environment variables")
-        sys.exit(1)
-
-def main():
-    """Main function"""
-    try:
-        # Set up environment
-        setup_environment()
-
-        # Initialize and run bot with enhanced features
-        logger.info("Initializing trading bot with enhanced strategy...")
-        bot = DerivTradingBot()
-        logger.info("Starting bot with multi-VIX support and optimized risk management...")
-        bot.run()
-
-    except ConfigError as e:
-        logger.error(f"Configuration error: {e}")
-        sys.exit(1)
-    except DerivBotError as e:
-        logger.error(f"Bot error: {e}")
-        sys.exit(1)
-    except Exception as e:
-        logger.error(f"Unexpected error: {e}")
-        sys.exit(1)
+        logging.error("DERIV_API_KEY not found in environment variables")
+        return False
+    return True
 
 if __name__ == "__main__":
-    main()
+    if setup_environment():
+        app.run(host='0.0.0.0', port=8080, debug=False)
