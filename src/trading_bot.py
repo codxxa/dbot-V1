@@ -393,15 +393,9 @@ class DerivTradingBot:
                                 stats.successful_trades += 1
                             stats.total_profit_loss += profit
                             stats.update_stats(trade)
-
-                            logger.info(f"Trade completed - {trade.symbol} {trade.contract_type}:")
-                            logger.info(f"  Entry: {trade.entry_tick:.5f}")
-                            logger.info(f"  Exit: {trade.exit_tick:.5f}")
-                            logger.info(f"  P/L: ${profit:.2f} ({trade.calculate_roi():.1f}%)")
-                            logger.info(f"  Signals: {', '.join(trade.signals)}")
-
                             self.active_trades.remove(trade)
                         else:
+                            # Check if trade is still active
                             logger.debug(f"Trade {trade.contract_id} still active, current status: {update.get('status', 'unknown')}")
 
                     except Exception as e:
