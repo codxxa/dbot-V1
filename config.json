@@ -1,0 +1,41 @@
+{
+    "symbols": [
+        "R_10",
+        "R_25",
+        "R_50",
+        "R_75_1S",
+        "R_10_1S",
+        "R_75",
+        "R_100_1S",
+        "R_25_1S",
+        "R_50_1S"
+        
+    ],
+    "trade_settings": {
+        "stake": 5,
+        "duration": 7,
+        "duration_unit": "m",
+        "max_risk_percent": 5,
+        "min_risk_percent": 0.5
+    },
+    "timeframes": [
+        "1m",
+        "5m",
+        "15m"
+    ],
+    "analysis_settings": {
+        "min_signal_strength": 0.3,
+        "lookback_periods": 100,
+        "rsi_thresholds": {
+            "oversold": 20,
+            "overbought": 80
+        }
+    },
+    "schedule": {
+        "active_hours": {
+            "start": "00:00",
+            "end": "23:59"
+        },
+        "trade_interval": 300
+    }
+}

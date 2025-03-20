@@ -1,0 +1,10 @@
+python_deriv_api
+websocket-client
+python-dotenv
+requests
+numpy
+pytest
+flask
+flask_sqlalchemy
+pandas
+schedule
