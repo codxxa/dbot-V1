@@ -358,6 +358,24 @@ class DerivTradingBot:
                             trade.entry_tick = entry_tick
                             trade.exit_tick = exit_tick
                             trade.exit_time = datetime.now()
+                        else:
+                            # Check if trade meets profit threshold for early closure
+                            current_profit = update.get('profit', 0)
+                            if current_profit > 0 and (current_profit / trade.stake) >= 0.5:  # 50% profit threshold
+                                logger.info(f"Closing trade {trade.contract_id} early at {current_profit:.2f} profit (>50%)")
+                                try:
+                                    close_response = self.api.loop.run_until_complete(
+                                        self.api.close_contract(trade.contract_id)
+                                    )
+                                    if close_response.get('is_sold', False):
+                                        trade.profit_loss = close_response['profit']
+                                        trade.result = "win"
+                                        trade.status = "completed"
+                                        trade.exit_tick = close_response['exit_tick']
+                                        trade.exit_time = datetime.now()
+                                        logger.info(f"Successfully closed trade with {trade.profit_loss:.2f} profit")
+                                except Exception as e:
+                                    logger.error(f"Failed to close profitable trade: {e}")
 
                             # Update statistics
                             if profit > 0:
