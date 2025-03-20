@@ -358,6 +358,20 @@ class DerivTradingBot:
                             trade.entry_tick = entry_tick
                             trade.exit_tick = exit_tick
                             trade.exit_time = datetime.now()
+                            
+                            # Update statistics
+                            if profit > 0:
+                                stats.successful_trades += 1
+                            stats.total_profit_loss += profit
+                            stats.update_stats(trade)
+
+                            logger.info(f"Trade completed - {trade.symbol} {trade.contract_type}:")
+                            logger.info(f"  Entry: {trade.entry_tick:.5f}")
+                            logger.info(f"  Exit: {trade.exit_tick:.5f}")
+                            logger.info(f"  P/L: ${profit:.2f} ({trade.calculate_roi():.1f}%)")
+                            logger.info(f"  Signals: {', '.join(trade.signals)}")
+
+                            self.active_trades.remove(trade)
                         else:
                             # Check if trade meets profit threshold for early closure
                             current_profit = update.get('profit', 0)
@@ -376,9 +390,6 @@ class DerivTradingBot:
                                         logger.info(f"Successfully closed trade with {trade.profit_loss:.2f} profit")
                                 except Exception as e:
                                     logger.error(f"Failed to close profitable trade: {e}")
-
-                            # Update statistics
-                            if profit > 0:
                                 stats.successful_trades += 1
                             stats.total_profit_loss += profit
                             stats.update_stats(trade)
