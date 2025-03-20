@@ -388,19 +388,17 @@ class DerivTradingBot:
                                         trade.exit_tick = close_response['exit_tick']
                                         trade.exit_time = datetime.now()
                                         logger.info(f"Successfully closed trade with {trade.profit_loss:.2f} profit")
+                                        
+                                        # Update trade statistics for early closure
+                                        stats.successful_trades += 1
+                                        stats.total_profit_loss += current_profit
+                                        stats.update_stats(trade)
+                                        self.active_trades.remove(trade)
                                 except Exception as e:
                                     logger.error(f"Failed to close profitable trade: {e}")
-                                    continue
-
-                            # Update trade statistics for early closure
-                            stats.successful_trades += 1
-                            stats.total_profit_loss += current_profit
-                            stats.update_stats(trade)
-                            self.active_trades.remove(trade)
-                            continue
-
-                        # Check if trade is still active
-                        logger.debug(f"Trade {trade.contract_id} still active, current status: {update.get('status', 'unknown')}")
+                            else:
+                                # Check if trade is still active
+                                logger.debug(f"Trade {trade.contract_id} still active, current status: {update.get('status', 'unknown')}")
 
                     except Exception as e:
                         logger.error(f"Error updating trade {trade.contract_id}: {e}")
